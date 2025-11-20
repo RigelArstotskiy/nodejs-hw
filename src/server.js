@@ -4,7 +4,7 @@ import cors from 'cors';
 import pino from 'pino-http';
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ?? 3000;
 
 //CLASSIC MIDDLEWARE
 app.use(express.json());
@@ -28,12 +28,12 @@ app.use(
 
 //ROUTES
 app.get('/notes', (req, res) => {
-  res.status(200).json([{ message: 'Retrieved all notes' }]);
+  res.status(200).json({ message: 'Retrieved all notes' });
 });
 
 app.get('/notes/:noteId', (req, res) => {
   const { noteId } = req.params;
-  res.status(200).json({ message: `Rertieved note with ID: ${noteId}` });
+  res.status(200).json({ message: `Retrieved note with ID: ${noteId}` });
 });
 
 //ERROR MIDDLEWARE
