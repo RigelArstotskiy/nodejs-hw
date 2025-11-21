@@ -2,7 +2,7 @@ import { model, Schema } from 'mongoose';
 
 const notesSchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
       trim: true,
@@ -11,23 +11,6 @@ const notesSchema = new Schema(
       type: String,
       trim: true,
       default: '',
-    },
-    age: {
-      type: Number,
-      required: true,
-    },
-    gender: {
-      type: String,
-      required: true,
-      enum: ['male', 'female', 'other'],
-    },
-    avgMark: {
-      type: Number,
-      required: true,
-    },
-    onDuty: {
-      type: Boolean,
-      default: false,
     },
     tag: {
       type: String,
@@ -48,7 +31,6 @@ const notesSchema = new Schema(
   },
   {
     timestamps: true,
-    versionKey: false,
   },
 );
 
