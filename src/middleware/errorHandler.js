@@ -1,11 +1,11 @@
-import createHttpError from 'http-errors';
+import { isHttpError } from 'http-errors';
 
 export const errorHandler = (err, req, res, next) => {
   console.error(err);
 
   const isProd = process.env.NODE_ENV === 'production';
 
-  if (!createHttpError.isHttpError(err)) {
+  if (!isHttpError(err)) {
     return res.status(err.status).json({
       message: isProd
         ? 'Something went wrong. Please try again later.'
