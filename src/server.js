@@ -5,6 +5,7 @@ import { connectMongoDB } from './db/connectMongoDB.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
+import { errors } from 'celebrate';
 
 import notesRoutes from './routes/notesRoutes.js';
 
@@ -17,9 +18,10 @@ app.use(express.json());
 app.use(cors());
 
 //ROUTES
-app.use(notesRoutes);
+app.use('/api/notes', notesRoutes);
 
 //ERROR MIDDLEWARE
+app.use(errors());
 app.use(notFoundHandler); //status 404
 app.use(errorHandler); //status 500
 
