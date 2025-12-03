@@ -1,6 +1,5 @@
 import { Note } from '../models/note.js';
 import createHttpError from 'http-errors';
-import {TAGS} from '../constants/tags.js';
 
 //get all notes
 // export const getAllNotes = async (req, res) => {
@@ -20,9 +19,6 @@ export const getAllNotes = async (req, res) => {
 
   //filter by tag
   if (tag) {
-   if (!TAGS.includes(tag)) {
-      return res.status(400).json({ message: "Invalid tag" });
-    }
     query.tag = tag;
   }
 
@@ -51,7 +47,7 @@ export const getAllNotes = async (req, res) => {
 //get note by id
 export const getNoteById = async (req, res, next) => {
   const { noteId } = req.params;
-  const note = await Note.findById({ _id: noteId });
+  const note = await Note.findById({ noteId });
 
   if (!note) {
     next(createHttpError(404, 'Note not found'));
@@ -69,9 +65,7 @@ export const createNote = async (req, res) => {
 //delete note
 export const deleteNote = async (req, res, next) => {
   const { noteId } = req.params;
-  const note = await Note.findOneAndDelete({
-    _id: noteId,
-  });
+  const note = await Note.findOneAndDelete({ noteId });
   if (!note) {
     next(createHttpError(404, 'Note not found'));
     return;
@@ -82,9 +76,7 @@ export const deleteNote = async (req, res, next) => {
 //patch note
 export const updateNote = async (req, res, next) => {
   const { noteId } = req.params;
-  const note = await Note.findOneAndUpdate({ _id: noteId }, req.body, {
-    new: true,
-  });
+  const note = await Note.findByIdAndUpdate(noteId, req.body, { new: true });
 
   if (!note) {
     next(createHttpError(404, 'Note not found'));

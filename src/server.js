@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 //ROUTES
-app.use('/notes', notesRoutes);
+app.use(notesRoutes);
 
 //ERROR MIDDLEWARE
 app.use(errors());
