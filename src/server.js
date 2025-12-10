@@ -1,14 +1,23 @@
+//npm packts import
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+
+//middleware elements import
 import { connectMongoDB } from './db/connectMongoDB.js';
 import { logger } from './middleware/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { notFoundHandler } from './middleware/notFoundHandler.js';
+//celebrate import
 import { errors } from 'celebrate';
-
+//routing element import
 import notesRoutes from './routes/notesRoutes.js';
+//auth routes logic import
+import authRoutes from './routes/authRoutes.js';
+//parser
+import cookieParser from 'cookie-parser';
 
+//initialize express app and server port
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
@@ -16,8 +25,10 @@ const PORT = process.env.PORT ?? 3000;
 app.use(logger);
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 //ROUTES
+app.use(authRoutes);
 app.use(notesRoutes);
 
 //ERROR MIDDLEWARE
