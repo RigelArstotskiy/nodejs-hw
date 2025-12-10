@@ -32,8 +32,8 @@ app.use(authRoutes);
 app.use(notesRoutes);
 
 //ERROR MIDDLEWARE
-app.use(errors());
 app.use(notFoundHandler); //status 404
+app.use(errors());
 app.use(errorHandler); //status 500
 
 //CONNECT TO MONGO
