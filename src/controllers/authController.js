@@ -5,7 +5,13 @@ import createHttpError from 'http-errors';
 import { User } from '../models/user.js';
 import { createSession, setSessionCookies } from '../services/auth.js';
 import { Session } from '../models/session.js';
+import jwt from 'jsonwebtoken';
+import { sendEmail } from '../utils/sendEmail.js';
+import handlebars from 'handlebars';
+import path from 'node:path';
+import fs from 'node:fs/promises';
 
+//registration
 export const registerUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -27,7 +33,7 @@ export const registerUser = async (req, res, next) => {
 
   res.status(201).json(newUser);
 };
-
+//login
 export const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -49,7 +55,7 @@ export const loginUser = async (req, res, next) => {
 
   res.status(200).json(user);
 };
-
+//logout
 export const logoutUser = async (req, res) => {
   const { sessionId } = req.cookies;
 
@@ -63,7 +69,7 @@ export const logoutUser = async (req, res) => {
 
   res.status(204).send();
 };
-
+//refresh session
 export const refreshUserSession = async (req, res, next) => {
   const session = await Session.findOne({
     _id: req.cookies.sessionId,
@@ -90,5 +96,75 @@ export const refreshUserSession = async (req, res, next) => {
 
   res.status(200).json({
     message: 'Session refreshed',
+  });
+};
+//email reset request
+export const requestResetEmail = async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(200).json({
+      message: 'If this email exist, a reset link has been sent',
+    });
+  }
+
+  const resetToken = jwt.sign(
+    { sub: user._id, email },
+    process.env.JWT_SECRET,
+    { expresIn: '15m' },
+  );
+
+  const templatePath = path.resolve('src/templates/reset-password-email.html');
+  const templateSource = await fs.readFule(templatePath, 'utf-8');
+  const template = handlebars.compile(templateSource);
+  const html = template({
+    name: user.username,
+    link: `${process.env.FRONTEND_DOMAIN}/reset-password?token=${resetToken}`,
+  });
+
+  try {
+    await sendEmail({
+      from: process.env.SMTP_FROM,
+      to: email,
+      subject: 'Reset your password',
+      html,
+    });
+  } catch {
+    next(
+      createHttpError(500, 'Failed to send the email, please try again later'),
+    );
+    return;
+  }
+
+  res.status(200).json({
+    message: 'If this email exist, a reset link has been sent',
+  });
+};
+//reset pass logic
+export const resetPassword = async (req, res, next) => {
+  const { token, password } = req.body;
+
+  let payload;
+  try {
+    payload = jwt.verify(token, process.env.JWT_SECRET);
+  } catch {
+    next(createHttpError(401, 'Invalod or expired token'));
+    return;
+  }
+
+  const user = await User.findOne({ _id: payload.sun, email: payload.email });
+  if (!user) {
+    next(createHttpError(404, 'User not found'));
+    return;
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  await User.updateOne({ _id: user._is }, { password: hashedPassword });
+
+  await Session.deleteMany({ userId: user._id });
+
+  res.staus(200).json({
+    message: 'Password reset successfuly.',
   });
 };

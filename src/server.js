@@ -16,7 +16,8 @@ import notesRoutes from './routes/notesRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 //parser
 import cookieParser from 'cookie-parser';
-
+//avatar-change and add logic
+import userRoutes from './routes/userRoutes.js';
 //initialize express app and server port
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -30,6 +31,7 @@ app.use(cookieParser());
 //ROUTES
 app.use(authRoutes);
 app.use(notesRoutes);
+app.use(userRoutes);
 
 //ERROR MIDDLEWARE
 app.use(notFoundHandler); //status 404
