@@ -29,7 +29,7 @@ router.post(
   requestResetEmail,
 );
 router.post(
-  '/aith/reset-password',
+  '/auth/reset-password',
   celebrate(resetPasswordSchema),
   resetPassword,
 );
