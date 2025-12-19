@@ -112,7 +112,7 @@ export const requestResetEmail = async (req, res, next) => {
   const resetToken = jwt.sign(
     { sub: user._id, email },
     process.env.JWT_SECRET,
-    { exprisIn: '15m' },
+    { expiresIn: '15m' },
   );
 
   const templatePath = path.resolve('src/templates/reset-password-email.html');
