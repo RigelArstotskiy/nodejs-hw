@@ -1,6 +1,7 @@
 import { HttpError } from 'http-errors';
 
 export const errorHandler = (err, req, res, next) => {
+  console.error(err); //for test
   const isProd = process.env.NODE_ENV === 'production';
 
   if (err instanceof HttpError) {
